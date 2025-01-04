@@ -1,7 +1,7 @@
 CREATE TABLE places (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
-    type INTEGER REFERENCES place_types(id) NOT NULL,
+    type INTEGER REFERENCES place_types(id) NOT NULL DEFAULT 0,
     distributor_id UUID REFERENCES distributors(id) ON DELETE CASCADE NOT NULL,
     street_id UUID NOT NULL,
     house_number VARCHAR(8) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE places (
 CREATE TABLE distributors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL UNIQUE,
-    owner_id UUID,
+    owner_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -23,7 +23,7 @@ CREATE TABLE distributors (
 CREATE TABLE distributors_staff (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     distributors_id UUID NOT NULL REFERENCES distributors(id) ON DELETE CASCADE,
-    users_id UUID NOT NULL,
+    user_id UUID NOT NULL,
     role TEXT CHECK (role IN ('manager', 'staff', 'owner')) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -31,7 +31,7 @@ CREATE TABLE distributors_staff (
 CREATE TABLE places_staff (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     place_id UUID NOT NULL REFERENCES places(id) ON DELETE CASCADE,
-    users_id UUID NOT NULL,
+    user_id UUID NOT NULL,
     role TEXT CHECK (role IN ('manager', 'staff', 'owner')) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );

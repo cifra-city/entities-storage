@@ -12,15 +12,15 @@ import (
 )
 
 const createDistributorStaff = `-- name: CreateDistributorStaff :one
-INSERT INTO distributors_staff (id, distributors_id, users_id, role)
+INSERT INTO distributors_staff (id, distributors_id, user_id, role)
 VALUES ($1, $2, $3, $4)
-    RETURNING id, distributors_id, users_id, role, created_at
+    RETURNING id, distributors_id, user_id, role, created_at
 `
 
 type CreateDistributorStaffParams struct {
 	ID             uuid.UUID
 	DistributorsID uuid.UUID
-	UsersID        uuid.UUID
+	UserID         uuid.UUID
 	Role           string
 }
 
@@ -28,14 +28,14 @@ func (q *Queries) CreateDistributorStaff(ctx context.Context, arg CreateDistribu
 	row := q.db.QueryRowContext(ctx, createDistributorStaff,
 		arg.ID,
 		arg.DistributorsID,
-		arg.UsersID,
+		arg.UserID,
 		arg.Role,
 	)
 	var i DistributorsStaff
 	err := row.Scan(
 		&i.ID,
 		&i.DistributorsID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)
@@ -54,21 +54,21 @@ func (q *Queries) DeleteDistributorStaff(ctx context.Context, id uuid.UUID) erro
 
 const deleteDistributorStaffByDistributorIDAndUserId = `-- name: DeleteDistributorStaffByDistributorIDAndUserId :exec
 DELETE FROM distributors_staff
-WHERE distributors_id = $1 AND users_id = $2
+WHERE distributors_id = $1 AND user_id = $2
 `
 
 type DeleteDistributorStaffByDistributorIDAndUserIdParams struct {
 	DistributorsID uuid.UUID
-	UsersID        uuid.UUID
+	UserID         uuid.UUID
 }
 
 func (q *Queries) DeleteDistributorStaffByDistributorIDAndUserId(ctx context.Context, arg DeleteDistributorStaffByDistributorIDAndUserIdParams) error {
-	_, err := q.db.ExecContext(ctx, deleteDistributorStaffByDistributorIDAndUserId, arg.DistributorsID, arg.UsersID)
+	_, err := q.db.ExecContext(ctx, deleteDistributorStaffByDistributorIDAndUserId, arg.DistributorsID, arg.UserID)
 	return err
 }
 
 const getDistributorStaffByDistributorID = `-- name: GetDistributorStaffByDistributorID :many
-SELECT id, distributors_id, users_id, role, created_at FROM distributors_staff
+SELECT id, distributors_id, user_id, role, created_at FROM distributors_staff
 WHERE distributors_id = $1
 `
 
@@ -84,7 +84,7 @@ func (q *Queries) GetDistributorStaffByDistributorID(ctx context.Context, distri
 		if err := rows.Scan(
 			&i.ID,
 			&i.DistributorsID,
-			&i.UsersID,
+			&i.UserID,
 			&i.Role,
 			&i.CreatedAt,
 		); err != nil {
@@ -102,22 +102,22 @@ func (q *Queries) GetDistributorStaffByDistributorID(ctx context.Context, distri
 }
 
 const getDistributorStaffByDistributorIDAndUserID = `-- name: GetDistributorStaffByDistributorIDAndUserID :one
-SELECT id, distributors_id, users_id, role, created_at FROM distributors_staff
-WHERE distributors_id = $1 AND users_id = $2
+SELECT id, distributors_id, user_id, role, created_at FROM distributors_staff
+WHERE distributors_id = $1 AND user_id = $2
 `
 
 type GetDistributorStaffByDistributorIDAndUserIDParams struct {
 	DistributorsID uuid.UUID
-	UsersID        uuid.UUID
+	UserID         uuid.UUID
 }
 
 func (q *Queries) GetDistributorStaffByDistributorIDAndUserID(ctx context.Context, arg GetDistributorStaffByDistributorIDAndUserIDParams) (DistributorsStaff, error) {
-	row := q.db.QueryRowContext(ctx, getDistributorStaffByDistributorIDAndUserID, arg.DistributorsID, arg.UsersID)
+	row := q.db.QueryRowContext(ctx, getDistributorStaffByDistributorIDAndUserID, arg.DistributorsID, arg.UserID)
 	var i DistributorsStaff
 	err := row.Scan(
 		&i.ID,
 		&i.DistributorsID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)
@@ -125,7 +125,7 @@ func (q *Queries) GetDistributorStaffByDistributorIDAndUserID(ctx context.Contex
 }
 
 const getDistributorStaffByID = `-- name: GetDistributorStaffByID :one
-SELECT id, distributors_id, users_id, role, created_at FROM distributors_staff
+SELECT id, distributors_id, user_id, role, created_at FROM distributors_staff
 WHERE id = $1
 `
 
@@ -135,7 +135,7 @@ func (q *Queries) GetDistributorStaffByID(ctx context.Context, id uuid.UUID) (Di
 	err := row.Scan(
 		&i.ID,
 		&i.DistributorsID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)
@@ -143,12 +143,12 @@ func (q *Queries) GetDistributorStaffByID(ctx context.Context, id uuid.UUID) (Di
 }
 
 const getDistributorStaffByUserID = `-- name: GetDistributorStaffByUserID :many
-SELECT id, distributors_id, users_id, role, created_at FROM distributors_staff
-WHERE users_id = $1
+SELECT id, distributors_id, user_id, role, created_at FROM distributors_staff
+WHERE user_id = $1
 `
 
-func (q *Queries) GetDistributorStaffByUserID(ctx context.Context, usersID uuid.UUID) ([]DistributorsStaff, error) {
-	rows, err := q.db.QueryContext(ctx, getDistributorStaffByUserID, usersID)
+func (q *Queries) GetDistributorStaffByUserID(ctx context.Context, userID uuid.UUID) ([]DistributorsStaff, error) {
+	rows, err := q.db.QueryContext(ctx, getDistributorStaffByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (q *Queries) GetDistributorStaffByUserID(ctx context.Context, usersID uuid.
 		if err := rows.Scan(
 			&i.ID,
 			&i.DistributorsID,
-			&i.UsersID,
+			&i.UserID,
 			&i.Role,
 			&i.CreatedAt,
 		); err != nil {
@@ -177,7 +177,7 @@ func (q *Queries) GetDistributorStaffByUserID(ctx context.Context, usersID uuid.
 }
 
 const listDistributorStaff = `-- name: ListDistributorStaff :many
-SELECT id, distributors_id, users_id, role, created_at FROM distributors_staff
+SELECT id, distributors_id, user_id, role, created_at FROM distributors_staff
 WHERE distributors_id = $1
 ORDER BY created_at DESC
 `
@@ -194,7 +194,7 @@ func (q *Queries) ListDistributorStaff(ctx context.Context, distributorsID uuid.
 		if err := rows.Scan(
 			&i.ID,
 			&i.DistributorsID,
-			&i.UsersID,
+			&i.UserID,
 			&i.Role,
 			&i.CreatedAt,
 		); err != nil {
@@ -215,7 +215,7 @@ const updateDistributorStaff = `-- name: UpdateDistributorStaff :one
 UPDATE distributors_staff
 SET role = $2
 WHERE id = $1
-RETURNING id, distributors_id, users_id, role, created_at
+RETURNING id, distributors_id, user_id, role, created_at
 `
 
 type UpdateDistributorStaffParams struct {
@@ -229,7 +229,7 @@ func (q *Queries) UpdateDistributorStaff(ctx context.Context, arg UpdateDistribu
 	err := row.Scan(
 		&i.ID,
 		&i.DistributorsID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)

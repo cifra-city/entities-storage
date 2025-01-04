@@ -20,17 +20,16 @@ type Places interface {
 	Get(ctx context.Context, id uuid.UUID) (sqlcore.Place, error)
 
 	UpdateName(ctx context.Context, id uuid.UUID, name string) (sqlcore.Place, error)
-	UpdateLocation(ctx context.Context, id uuid.UUID, location string, houseNumber string) (sqlcore.Place, error)
-	UpdateDistributor(ctx context.Context, id uuid.UUID, distributorId uuid.UUID) (sqlcore.Place, error)
 	UpdateType(ctx context.Context, id uuid.UUID, typeId int) (sqlcore.Place, error)
+	UpdateLocation(ctx context.Context, id uuid.UUID, location string, houseNumber string) (sqlcore.Place, error)
 	UpdatePlaceScore(ctx context.Context, id uuid.UUID, addScore int) (sqlcore.Place, error)
 
 	Delete(ctx context.Context, id uuid.UUID) error
 
 	List(ctx context.Context) ([]sqlcore.Place, error)
+	ListByType(ctx context.Context, typeId int) ([]sqlcore.Place, error)
 	ListByStreet(ctx context.Context, streetId uuid.UUID) ([]sqlcore.Place, error)
 	ListByDistributor(ctx context.Context, distributorId uuid.UUID) ([]sqlcore.Place, error)
-	ListByType(ctx context.Context, typeId int) ([]sqlcore.Place, error)
 	ListByTypeAndStreet(ctx context.Context, typeId int, streetId uuid.UUID) ([]sqlcore.Place, error)
 }
 
@@ -78,13 +77,6 @@ func (p *places) UpdateLocation(ctx context.Context, id uuid.UUID, location stri
 	})
 }
 
-func (p *places) UpdateDistributor(ctx context.Context, id uuid.UUID, distributorId uuid.UUID) (sqlcore.Place, error) {
-	return p.queries.UpdatePlaceDistributor(ctx, sqlcore.UpdatePlaceDistributorParams{
-		ID:            id,
-		DistributorID: distributorId,
-	})
-}
-
 func (p *places) UpdateType(ctx context.Context, id uuid.UUID, typeId int) (sqlcore.Place, error) {
 	return p.queries.UpdatePlaceType(ctx, sqlcore.UpdatePlaceTypeParams{
 		ID:   id,
@@ -97,10 +89,6 @@ func (p *places) UpdatePlaceScore(ctx context.Context, id uuid.UUID, addScore in
 		ID:         id,
 		TotalScore: int32(addScore),
 	})
-}
-
-func (p *places) Delete(ctx context.Context, id uuid.UUID) error {
-	return p.queries.DeletePlace(ctx, id)
 }
 
 func (p *places) List(ctx context.Context) ([]sqlcore.Place, error) {
@@ -124,4 +112,8 @@ func (p *places) ListByTypeAndStreet(ctx context.Context, typeId int, streetId u
 		StreetID: streetId,
 		Type:     int32(typeId),
 	})
+}
+
+func (p *places) Delete(ctx context.Context, id uuid.UUID) error {
+	return p.queries.DeletePlace(ctx, id)
 }

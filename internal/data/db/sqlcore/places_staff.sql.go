@@ -12,15 +12,15 @@ import (
 )
 
 const createPlaceStaff = `-- name: CreatePlaceStaff :one
-INSERT INTO places_staff (id, place_id, users_id, role)
+INSERT INTO places_staff (id, place_id, user_id, role)
 VALUES ($1, $2, $3, $4)
-    RETURNING id, place_id, users_id, role, created_at
+    RETURNING id, place_id, user_id, role, created_at
 `
 
 type CreatePlaceStaffParams struct {
 	ID      uuid.UUID
 	PlaceID uuid.UUID
-	UsersID uuid.UUID
+	UserID  uuid.UUID
 	Role    string
 }
 
@@ -28,14 +28,14 @@ func (q *Queries) CreatePlaceStaff(ctx context.Context, arg CreatePlaceStaffPara
 	row := q.db.QueryRowContext(ctx, createPlaceStaff,
 		arg.ID,
 		arg.PlaceID,
-		arg.UsersID,
+		arg.UserID,
 		arg.Role,
 	)
 	var i PlacesStaff
 	err := row.Scan(
 		&i.ID,
 		&i.PlaceID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)
@@ -53,7 +53,7 @@ func (q *Queries) DeletePlaceStaff(ctx context.Context, id uuid.UUID) error {
 }
 
 const getPlaceStaffByID = `-- name: GetPlaceStaffByID :one
-SELECT id, place_id, users_id, role, created_at FROM places_staff
+SELECT id, place_id, user_id, role, created_at FROM places_staff
 WHERE id = $1
 `
 
@@ -63,7 +63,30 @@ func (q *Queries) GetPlaceStaffByID(ctx context.Context, id uuid.UUID) (PlacesSt
 	err := row.Scan(
 		&i.ID,
 		&i.PlaceID,
-		&i.UsersID,
+		&i.UserID,
+		&i.Role,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getPlaceStaffByPlaceIDAndUserID = `-- name: GetPlaceStaffByPlaceIDAndUserID :one
+SELECT id, place_id, user_id, role, created_at FROM places_staff
+WHERE place_id = $1 AND user_id = $2
+`
+
+type GetPlaceStaffByPlaceIDAndUserIDParams struct {
+	PlaceID uuid.UUID
+	UserID  uuid.UUID
+}
+
+func (q *Queries) GetPlaceStaffByPlaceIDAndUserID(ctx context.Context, arg GetPlaceStaffByPlaceIDAndUserIDParams) (PlacesStaff, error) {
+	row := q.db.QueryRowContext(ctx, getPlaceStaffByPlaceIDAndUserID, arg.PlaceID, arg.UserID)
+	var i PlacesStaff
+	err := row.Scan(
+		&i.ID,
+		&i.PlaceID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)
@@ -71,7 +94,7 @@ func (q *Queries) GetPlaceStaffByID(ctx context.Context, id uuid.UUID) (PlacesSt
 }
 
 const listPlaceStaff = `-- name: ListPlaceStaff :many
-SELECT id, place_id, users_id, role, created_at FROM places_staff
+SELECT id, place_id, user_id, role, created_at FROM places_staff
 WHERE place_id = $1
 ORDER BY created_at DESC
 `
@@ -88,7 +111,7 @@ func (q *Queries) ListPlaceStaff(ctx context.Context, placeID uuid.UUID) ([]Plac
 		if err := rows.Scan(
 			&i.ID,
 			&i.PlaceID,
-			&i.UsersID,
+			&i.UserID,
 			&i.Role,
 			&i.CreatedAt,
 		); err != nil {
@@ -109,7 +132,7 @@ const updatePlaceStaff = `-- name: UpdatePlaceStaff :one
 UPDATE places_staff
 SET role = $2
 WHERE id = $1
-    RETURNING id, place_id, users_id, role, created_at
+    RETURNING id, place_id, user_id, role, created_at
 `
 
 type UpdatePlaceStaffParams struct {
@@ -123,7 +146,7 @@ func (q *Queries) UpdatePlaceStaff(ctx context.Context, arg UpdatePlaceStaffPara
 	err := row.Scan(
 		&i.ID,
 		&i.PlaceID,
-		&i.UsersID,
+		&i.UserID,
 		&i.Role,
 		&i.CreatedAt,
 	)

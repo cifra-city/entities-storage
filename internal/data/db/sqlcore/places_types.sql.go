@@ -10,18 +10,13 @@ import (
 )
 
 const createPlacesType = `-- name: CreatePlacesType :one
-INSERT INTO place_types (id, name)
-VALUES ($1, $2)
+INSERT INTO place_types (name)
+VALUES ($1)
 RETURNING id, name
 `
 
-type CreatePlacesTypeParams struct {
-	ID   int32
-	Name string
-}
-
-func (q *Queries) CreatePlacesType(ctx context.Context, arg CreatePlacesTypeParams) (PlaceType, error) {
-	row := q.db.QueryRowContext(ctx, createPlacesType, arg.ID, arg.Name)
+func (q *Queries) CreatePlacesType(ctx context.Context, name string) (PlaceType, error) {
+	row := q.db.QueryRowContext(ctx, createPlacesType, name)
 	var i PlaceType
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
@@ -61,20 +56,20 @@ func (q *Queries) GetPlacesTypeByName(ctx context.Context, name string) (PlaceTy
 	return i, err
 }
 
-const updatePlacesType = `-- name: UpdatePlacesType :one
+const updatePlacesName = `-- name: UpdatePlacesName :one
 UPDATE place_types
 SET name = $2
 WHERE id = $1
 RETURNING id, name
 `
 
-type UpdatePlacesTypeParams struct {
+type UpdatePlacesNameParams struct {
 	ID   int32
 	Name string
 }
 
-func (q *Queries) UpdatePlacesType(ctx context.Context, arg UpdatePlacesTypeParams) (PlaceType, error) {
-	row := q.db.QueryRowContext(ctx, updatePlacesType, arg.ID, arg.Name)
+func (q *Queries) UpdatePlacesName(ctx context.Context, arg UpdatePlacesNameParams) (PlaceType, error) {
+	row := q.db.QueryRowContext(ctx, updatePlacesName, arg.ID, arg.Name)
 	var i PlaceType
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err

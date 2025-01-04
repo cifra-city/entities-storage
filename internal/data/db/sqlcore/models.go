@@ -13,7 +13,7 @@ import (
 type Distributor struct {
 	ID        uuid.UUID
 	Name      string
-	OwnerID   uuid.NullUUID
+	OwnerID   uuid.UUID
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 }
@@ -21,7 +21,7 @@ type Distributor struct {
 type DistributorsStaff struct {
 	ID             uuid.UUID
 	DistributorsID uuid.UUID
-	UsersID        uuid.UUID
+	UserID         uuid.UUID
 	Role           string
 	CreatedAt      sql.NullTime
 }
@@ -48,7 +48,7 @@ type PlaceType struct {
 type PlacesStaff struct {
 	ID        uuid.UUID
 	PlaceID   uuid.UUID
-	UsersID   uuid.UUID
+	UserID    uuid.UUID
 	Role      string
 	CreatedAt sql.NullTime
 }

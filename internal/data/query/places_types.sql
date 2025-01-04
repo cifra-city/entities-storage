@@ -1,6 +1,6 @@
 -- name: CreatePlacesType :one
-INSERT INTO place_types (id, name)
-VALUES ($1, $2)
+INSERT INTO place_types (name)
+VALUES ($1)
 RETURNING *;
 
 -- name: GetPlacesTypeByID :one
@@ -11,7 +11,7 @@ WHERE id = $1;
 SELECT * FROM place_types
 WHERE name = $1;
 
--- name: UpdatePlacesType :one
+-- name: UpdatePlacesName :one
 UPDATE place_types
 SET name = $2
 WHERE id = $1

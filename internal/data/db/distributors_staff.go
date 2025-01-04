@@ -33,7 +33,7 @@ func (d *distributorsStaff) Create(ctx context.Context, distributorId uuid.UUID,
 	return d.queries.CreateDistributorStaff(ctx, sqlcore.CreateDistributorStaffParams{
 		ID:             uuid.New(),
 		DistributorsID: distributorId,
-		UsersID:        userId,
+		UserID:         userId,
 		Role:           role,
 	})
 }
@@ -45,7 +45,7 @@ func (d *distributorsStaff) Get(ctx context.Context, StaffId uuid.UUID) (sqlcore
 func (d *distributorsStaff) GetByUser(ctx context.Context, distributorId uuid.UUID, userId uuid.UUID) (sqlcore.DistributorsStaff, error) {
 	return d.queries.GetDistributorStaffByDistributorIDAndUserID(ctx, sqlcore.GetDistributorStaffByDistributorIDAndUserIDParams{
 		DistributorsID: distributorId,
-		UsersID:        userId,
+		UserID:         userId,
 	})
 }
 
@@ -63,7 +63,7 @@ func (d *distributorsStaff) Delete(ctx context.Context, StaffId uuid.UUID) error
 func (d *distributorsStaff) DeleteByUser(ctx context.Context, distributorId uuid.UUID, userId uuid.UUID) error {
 	return d.queries.DeleteDistributorStaffByDistributorIDAndUserId(ctx, sqlcore.DeleteDistributorStaffByDistributorIDAndUserIdParams{
 		DistributorsID: distributorId,
-		UsersID:        userId,
+		UserID:         userId,
 	})
 }
 

@@ -20,7 +20,7 @@ VALUES ($1, $2, $3)
 type CreateDistributorParams struct {
 	ID      uuid.UUID
 	Name    string
-	OwnerID uuid.NullUUID
+	OwnerID uuid.UUID
 }
 
 func (q *Queries) CreateDistributor(ctx context.Context, arg CreateDistributorParams) (Distributor, error) {

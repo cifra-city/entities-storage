@@ -1,5 +1,5 @@
 -- name: CreateDistributorStaff :one
-INSERT INTO distributors_staff (id, distributors_id, users_id, role)
+INSERT INTO distributors_staff (id, distributors_id, user_id, role)
 VALUES ($1, $2, $3, $4)
     RETURNING *;
 
@@ -9,7 +9,7 @@ WHERE id = $1;
 
 -- name: GetDistributorStaffByDistributorIDAndUserID :one
 SELECT * FROM distributors_staff
-WHERE distributors_id = $1 AND users_id = $2;
+WHERE distributors_id = $1 AND user_id = $2;
 
 -- name: GetDistributorStaffByDistributorID :many
 SELECT * FROM distributors_staff
@@ -17,7 +17,7 @@ WHERE distributors_id = $1;
 
 -- name: GetDistributorStaffByUserID :many
 SELECT * FROM distributors_staff
-WHERE users_id = $1;
+WHERE user_id = $1;
 
 -- name: UpdateDistributorStaff :one
 UPDATE distributors_staff
@@ -31,7 +31,7 @@ WHERE id = $1;
 
 -- name: DeleteDistributorStaffByDistributorIDAndUserId :exec
 DELETE FROM distributors_staff
-WHERE distributors_id = $1 AND users_id = $2;
+WHERE distributors_id = $1 AND user_id = $2;
 
 -- name: ListDistributorStaff :many
 SELECT * FROM distributors_staff
