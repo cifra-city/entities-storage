@@ -8,7 +8,9 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/alecthomas/kingpin"
 	"github.com/cifra-city/comtools/cifractx"
+	"github.com/cifra-city/entities-storage/internal/config"
 )
 
 func Run(args []string) bool {

@@ -3,6 +3,8 @@ package cli
 import (
 	"context"
 	"sync"
+
+	service "github.com/cifra-city/entities-storage/internal/services"
 )
 
 func runServices(ctx context.Context, wg *sync.WaitGroup) {

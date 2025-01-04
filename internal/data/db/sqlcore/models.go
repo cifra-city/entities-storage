@@ -6,6 +6,7 @@ package sqlcore
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -30,14 +31,25 @@ type Place struct {
 	ID            uuid.UUID
 	Name          string
 	Type          int32
-	DistributorID uuid.UUID
+	Description   sql.NullString
 	StreetID      uuid.UUID
 	HouseNumber   string
 	Location      interface{}
+	Schedule      uuid.UUID
 	TotalScore    int32
 	ReviewsCount  int32
+	DistributorID uuid.NullUUID
 	CreatedAt     sql.NullTime
 	UpdatedAt     sql.NullTime
+}
+
+type PlaceSchedule struct {
+	ID        uuid.UUID
+	PlaceID   uuid.UUID
+	DayOfWeek int32
+	OpenTime  time.Time
+	CloseTime time.Time
+	CreatedAt sql.NullTime
 }
 
 type PlaceType struct {

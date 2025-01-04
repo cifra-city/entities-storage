@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/cifra-city/cifra-rabbit"
+	"github.com/cifra-city/entities-storage/internal/data/db"
 	"github.com/cifra-city/tokens"
 	"github.com/sirupsen/logrus"
 )

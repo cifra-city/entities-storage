@@ -1,3 +1,9 @@
+github.com/alecthomas/kingpin v2.2.6+incompatible h1:5svnBTFgJjZvGKyYBtMB0+m5wvrbUHiqye8wRJMlnYI=
+github.com/alecthomas/kingpin v2.2.6+incompatible/go.mod h1:59OFYbFVLKQKq+mqrL6Rw5bR0c3ACQaawgXx0QYndlE=
+github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 h1:JYp7IbQjafoB+tBA3gMyHYHrpOtNuDiK/uB5uXxq5wM=
+github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
+github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b h1:mimo19zliBX/vSQ6PWWSL9lK8qwHozUj03+zLoEB8O0=
+github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b/go.mod h1:fvzegU4vN3H1qMT+8wDmzjAcDONcgo2/SZ/TyfdUOFs=
 github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 h1:zV3ejI06GQ59hwDQAvmK1qxOQGB3WuVTRoY0okPTAv0=
 github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496/go.mod h1:oGkLhpf+kjZl6xBf758TQhh5XrAeiJv/7FRz/2spLIg=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
@@ -10,10 +16,8 @@ github.com/cifra-city/cifra-rabbit v0.0.1 h1:pNgxDRrT/Tpor8K3tBjPSl8co4AijDGWznf
 github.com/cifra-city/cifra-rabbit v0.0.1/go.mod h1:IjORc8/Hbek3nooiVg7AQLf/v/f9zoUNzo/UWTUsZp8=
 github.com/cifra-city/comtools v0.0.2 h1:dcqSZKbi6yCDMeX/qaFUFsCqo3HPVmKuHOgz6eTOfrc=
 github.com/cifra-city/comtools v0.0.2/go.mod h1:vzNB1uNpYcNzluqkhE3g5Yxe12v1uNwzRFrs4PVzPqk=
-github.com/cifra-city/httpkit v0.0.0-20241220020938-31caee808935 h1:lrTVqdhw/NG3cgUSZ8cCMEQGMnLDqAIsj0VP6VdaFA8=
-github.com/cifra-city/httpkit v0.0.0-20241220020938-31caee808935/go.mod h1:YIJ3wK4+GVz1TRAmFHJglwWV7usxYGICZgaWSWZINwg=
-github.com/cifra-city/tokens v1.3.0 h1:3DuG4cR/qdrB2Zu85Ql8yXkJ4vRvg+HppIp9EDBqgoI=
-github.com/cifra-city/tokens v1.3.0/go.mod h1:szvYYQy+GDRQqVSv47e/Nd96RSNLn3VCITk61epZ53g=
+github.com/cifra-city/tokens v0.0.21 h1:A8xTXHthB7ZY/ZO28zpz+4H3XSBC6sdUJAZBmP3bjts=
+github.com/cifra-city/tokens v0.0.21/go.mod h1:jyIDF+u6u4yFM5g/YaDB7xvkLhmDuZdMeyJEzzwFJWk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

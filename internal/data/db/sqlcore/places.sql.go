@@ -7,51 +7,64 @@ package sqlcore
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
 
 const createPlace = `-- name: CreatePlace :one
-INSERT INTO places (id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count)
+INSERT INTO places (
+    name,
+    type,
+    description,
+    street_id,
+    house_number,
+    location,
+    schedule,
+    total_score,
+    distributor_id
+)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
+    RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
 `
 
 type CreatePlaceParams struct {
-	ID            uuid.UUID
 	Name          string
 	Type          int32
-	DistributorID uuid.UUID
+	Description   sql.NullString
 	StreetID      uuid.UUID
 	HouseNumber   string
 	Location      interface{}
+	Schedule      uuid.UUID
 	TotalScore    int32
-	ReviewsCount  int32
+	DistributorID uuid.NullUUID
 }
 
 func (q *Queries) CreatePlace(ctx context.Context, arg CreatePlaceParams) (Place, error) {
 	row := q.db.QueryRowContext(ctx, createPlace,
-		arg.ID,
 		arg.Name,
 		arg.Type,
-		arg.DistributorID,
+		arg.Description,
 		arg.StreetID,
 		arg.HouseNumber,
 		arg.Location,
+		arg.Schedule,
 		arg.TotalScore,
-		arg.ReviewsCount,
+		arg.DistributorID,
 	)
 	var i Place
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
+		&i.DistributorID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -69,7 +82,7 @@ func (q *Queries) DeletePlace(ctx context.Context, id uuid.UUID) error {
 }
 
 const getPlaceByID = `-- name: GetPlaceByID :one
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
+SELECT id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at FROM places
 WHERE id = $1
 `
 
@@ -80,64 +93,26 @@ func (q *Queries) GetPlaceByID(ctx context.Context, id uuid.UUID) (Place, error)
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
+		&i.DistributorID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const listPlaces = `-- name: ListPlaces :many
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
-ORDER BY created_at DESC
-`
-
-func (q *Queries) ListPlaces(ctx context.Context) ([]Place, error) {
-	rows, err := q.db.QueryContext(ctx, listPlaces)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Place
-	for rows.Next() {
-		var i Place
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Type,
-			&i.DistributorID,
-			&i.StreetID,
-			&i.HouseNumber,
-			&i.Location,
-			&i.TotalScore,
-			&i.ReviewsCount,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listPlacesByDistributor = `-- name: ListPlacesByDistributor :many
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
+SELECT id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at FROM places
 WHERE distributor_id = $1
 `
 
-func (q *Queries) ListPlacesByDistributor(ctx context.Context, distributorID uuid.UUID) ([]Place, error) {
+func (q *Queries) ListPlacesByDistributor(ctx context.Context, distributorID uuid.NullUUID) ([]Place, error) {
 	rows, err := q.db.QueryContext(ctx, listPlacesByDistributor, distributorID)
 	if err != nil {
 		return nil, err
@@ -150,12 +125,14 @@ func (q *Queries) ListPlacesByDistributor(ctx context.Context, distributorID uui
 			&i.ID,
 			&i.Name,
 			&i.Type,
-			&i.DistributorID,
+			&i.Description,
 			&i.StreetID,
 			&i.HouseNumber,
 			&i.Location,
+			&i.Schedule,
 			&i.TotalScore,
 			&i.ReviewsCount,
+			&i.DistributorID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -173,7 +150,7 @@ func (q *Queries) ListPlacesByDistributor(ctx context.Context, distributorID uui
 }
 
 const listPlacesByStreet = `-- name: ListPlacesByStreet :many
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
+SELECT id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at FROM places
 WHERE street_id = $1
 `
 
@@ -190,12 +167,14 @@ func (q *Queries) ListPlacesByStreet(ctx context.Context, streetID uuid.UUID) ([
 			&i.ID,
 			&i.Name,
 			&i.Type,
-			&i.DistributorID,
+			&i.Description,
 			&i.StreetID,
 			&i.HouseNumber,
 			&i.Location,
+			&i.Schedule,
 			&i.TotalScore,
 			&i.ReviewsCount,
+			&i.DistributorID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -213,7 +192,7 @@ func (q *Queries) ListPlacesByStreet(ctx context.Context, streetID uuid.UUID) ([
 }
 
 const listPlacesByStreetAndType = `-- name: ListPlacesByStreetAndType :many
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
+SELECT id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at FROM places
 WHERE street_id = $1 AND type = $2
 `
 
@@ -235,12 +214,14 @@ func (q *Queries) ListPlacesByStreetAndType(ctx context.Context, arg ListPlacesB
 			&i.ID,
 			&i.Name,
 			&i.Type,
-			&i.DistributorID,
+			&i.Description,
 			&i.StreetID,
 			&i.HouseNumber,
 			&i.Location,
+			&i.Schedule,
 			&i.TotalScore,
 			&i.ReviewsCount,
+			&i.DistributorID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -258,7 +239,7 @@ func (q *Queries) ListPlacesByStreetAndType(ctx context.Context, arg ListPlacesB
 }
 
 const listPlacesByType = `-- name: ListPlacesByType :many
-SELECT id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at FROM places
+SELECT id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at FROM places
 WHERE type = $1
 `
 
@@ -275,12 +256,14 @@ func (q *Queries) ListPlacesByType(ctx context.Context, type_ int32) ([]Place, e
 			&i.ID,
 			&i.Name,
 			&i.Type,
-			&i.DistributorID,
+			&i.Description,
 			&i.StreetID,
 			&i.HouseNumber,
 			&i.Location,
+			&i.Schedule,
 			&i.TotalScore,
 			&i.ReviewsCount,
+			&i.DistributorID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -297,21 +280,65 @@ func (q *Queries) ListPlacesByType(ctx context.Context, type_ int32) ([]Place, e
 	return items, nil
 }
 
+const updateGrade = `-- name: UpdateGrade :one
+UPDATE places
+SET
+    total_score = total_score + $2,
+    reviews_count = reviews_count + 1
+WHERE id = $1
+RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
+`
+
+type UpdateGradeParams struct {
+	ID         uuid.UUID
+	TotalScore int32
+}
+
+func (q *Queries) UpdateGrade(ctx context.Context, arg UpdateGradeParams) (Place, error) {
+	row := q.db.QueryRowContext(ctx, updateGrade, arg.ID, arg.TotalScore)
+	var i Place
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Type,
+		&i.Description,
+		&i.StreetID,
+		&i.HouseNumber,
+		&i.Location,
+		&i.Schedule,
+		&i.TotalScore,
+		&i.ReviewsCount,
+		&i.DistributorID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updatePlace = `-- name: UpdatePlace :one
 UPDATE places
-SET name = $2, type = $3, distributor_id = $4, street_id = $5, house_number = $6, location = $7, updated_at = NOW()
+SET
+    name = $2,
+    type = $3,
+    description = $4,
+    street_id = $5,
+    house_number = $6,
+    location = $7,
+    schedule = $8,
+    updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
+RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
 `
 
 type UpdatePlaceParams struct {
-	ID            uuid.UUID
-	Name          string
-	Type          int32
-	DistributorID uuid.UUID
-	StreetID      uuid.UUID
-	HouseNumber   string
-	Location      interface{}
+	ID          uuid.UUID
+	Name        string
+	Type        int32
+	Description sql.NullString
+	StreetID    uuid.UUID
+	HouseNumber string
+	Location    interface{}
+	Schedule    uuid.UUID
 }
 
 func (q *Queries) UpdatePlace(ctx context.Context, arg UpdatePlaceParams) (Place, error) {
@@ -319,53 +346,62 @@ func (q *Queries) UpdatePlace(ctx context.Context, arg UpdatePlaceParams) (Place
 		arg.ID,
 		arg.Name,
 		arg.Type,
-		arg.DistributorID,
+		arg.Description,
 		arg.StreetID,
 		arg.HouseNumber,
 		arg.Location,
+		arg.Schedule,
 	)
 	var i Place
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
+		&i.DistributorID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const updatePlaceDistributor = `-- name: UpdatePlaceDistributor :one
+const updatePlaceHeadline = `-- name: UpdatePlaceHeadline :one
 UPDATE places
-SET distributor_id = $2, updated_at = NOW()
+SET
+    name = $2,
+    description = $3,
+    updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
+RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
 `
 
-type UpdatePlaceDistributorParams struct {
-	ID            uuid.UUID
-	DistributorID uuid.UUID
+type UpdatePlaceHeadlineParams struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
 }
 
-func (q *Queries) UpdatePlaceDistributor(ctx context.Context, arg UpdatePlaceDistributorParams) (Place, error) {
-	row := q.db.QueryRowContext(ctx, updatePlaceDistributor, arg.ID, arg.DistributorID)
+func (q *Queries) UpdatePlaceHeadline(ctx context.Context, arg UpdatePlaceHeadlineParams) (Place, error) {
+	row := q.db.QueryRowContext(ctx, updatePlaceHeadline, arg.ID, arg.Name, arg.Description)
 	var i Place
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
+		&i.DistributorID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -374,92 +410,36 @@ func (q *Queries) UpdatePlaceDistributor(ctx context.Context, arg UpdatePlaceDis
 
 const updatePlaceLocation = `-- name: UpdatePlaceLocation :one
 UPDATE places
-SET location = $2, house_number = $3, updated_at = NOW()
+SET
+    street_id = $1,
+    house_number = $2,
+    location = $3,
+    updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
+RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
 `
 
 type UpdatePlaceLocationParams struct {
-	ID          uuid.UUID
-	Location    interface{}
+	StreetID    uuid.UUID
 	HouseNumber string
+	Location    interface{}
 }
 
 func (q *Queries) UpdatePlaceLocation(ctx context.Context, arg UpdatePlaceLocationParams) (Place, error) {
-	row := q.db.QueryRowContext(ctx, updatePlaceLocation, arg.ID, arg.Location, arg.HouseNumber)
+	row := q.db.QueryRowContext(ctx, updatePlaceLocation, arg.StreetID, arg.HouseNumber, arg.Location)
 	var i Place
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updatePlaceName = `-- name: UpdatePlaceName :one
-UPDATE places
-SET name = $2, updated_at = NOW()
-WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
-`
-
-type UpdatePlaceNameParams struct {
-	ID   uuid.UUID
-	Name string
-}
-
-func (q *Queries) UpdatePlaceName(ctx context.Context, arg UpdatePlaceNameParams) (Place, error) {
-	row := q.db.QueryRowContext(ctx, updatePlaceName, arg.ID, arg.Name)
-	var i Place
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Type,
 		&i.DistributorID,
-		&i.StreetID,
-		&i.HouseNumber,
-		&i.Location,
-		&i.TotalScore,
-		&i.ReviewsCount,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updatePlaceScore = `-- name: UpdatePlaceScore :one
-UPDATE places
-SET total_score = total_score + $2, reviews_count = reviews_count + 1
-WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
-`
-
-type UpdatePlaceScoreParams struct {
-	ID         uuid.UUID
-	TotalScore int32
-}
-
-func (q *Queries) UpdatePlaceScore(ctx context.Context, arg UpdatePlaceScoreParams) (Place, error) {
-	row := q.db.QueryRowContext(ctx, updatePlaceScore, arg.ID, arg.TotalScore)
-	var i Place
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Type,
-		&i.DistributorID,
-		&i.StreetID,
-		&i.HouseNumber,
-		&i.Location,
-		&i.TotalScore,
-		&i.ReviewsCount,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -468,9 +448,11 @@ func (q *Queries) UpdatePlaceScore(ctx context.Context, arg UpdatePlaceScorePara
 
 const updatePlaceType = `-- name: UpdatePlaceType :one
 UPDATE places
-SET type = $2, updated_at = NOW()
+SET
+    type = $2,
+    updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, type, distributor_id, street_id, house_number, location, total_score, reviews_count, created_at, updated_at
+RETURNING id, name, type, description, street_id, house_number, location, schedule, total_score, reviews_count, distributor_id, created_at, updated_at
 `
 
 type UpdatePlaceTypeParams struct {
@@ -485,12 +467,14 @@ func (q *Queries) UpdatePlaceType(ctx context.Context, arg UpdatePlaceTypeParams
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.DistributorID,
+		&i.Description,
 		&i.StreetID,
 		&i.HouseNumber,
 		&i.Location,
+		&i.Schedule,
 		&i.TotalScore,
 		&i.ReviewsCount,
+		&i.DistributorID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

@@ -3,10 +3,12 @@ module github.com/cifra-city/entities-storage
 go 1.23.1
 
 require (
+	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/cifra-city/cifra-rabbit v0.0.1
 	github.com/cifra-city/comtools v0.0.2
-	github.com/cifra-city/tokens v1.3.0
+	github.com/cifra-city/tokens v0.0.21
 	github.com/go-chi/chi/v5 v5.2.0
+	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
@@ -14,14 +16,14 @@ require (
 )
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
+	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/cifra-city/httpkit v0.0.0-20241220020938-31caee808935 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/jsonapi v1.0.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
