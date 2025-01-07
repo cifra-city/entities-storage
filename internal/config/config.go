@@ -25,6 +25,11 @@ type JWTConfig struct {
 	} `mapstructure:"access_token"`
 }
 
+type MongoDBConfig struct {
+	URL      string `mapstructure:"url"`
+	database string `mapstructure:"database"`
+}
+
 type RabbitMQConfig struct {
 	URL      string `mapstructure:"url"`
 	User     string `mapstructure:"user"`
@@ -66,6 +71,7 @@ type Config struct {
 	Server   ServerConfig    `mapstructure:"server"`
 	JWT      JWTConfig       `mapstructure:"jwt"`
 	Rabbit   RabbitMQConfig  `mapstructure:"rabbit"`
+	MongoDB  MongoDBConfig   `mapstructure:"mongodb"`
 	Logging  LoggingConfig   `mapstructure:"logging"`
 	Rate     RateLimitConfig `mapstructure:"rate_limit"`
 	Swagger  SwaggerConfig   `mapstructure:"swagger"`

@@ -2,7 +2,8 @@ package config
 
 import (
 	"github.com/cifra-city/cifra-rabbit"
-	"github.com/cifra-city/entities-storage/internal/data/db"
+	"github.com/cifra-city/entities-storage/internal/data/nosql"
+	"github.com/cifra-city/entities-storage/internal/data/sql"
 	"github.com/cifra-city/tokens"
 	"github.com/sirupsen/logrus"
 )
@@ -13,7 +14,8 @@ const (
 
 type Service struct {
 	Config       *Config
-	Databaser    *db.Databaser
+	SqlDB        *sql.Repo
+	MongoDB      *nosql.Repository
 	Logger       *logrus.Logger
 	TokenManager *tokens.TokenManager
 	Broker       *cifra_rabbit.Broker
@@ -21,7 +23,7 @@ type Service struct {
 
 func NewServer(cfg *Config) (*Service, error) {
 	logger := SetupLogger(cfg.Logging.Level, cfg.Logging.Format)
-	queries, err := db.NewDatabaser(cfg.Database.URL)
+	queries, err := sql.NewRepoSQl(cfg.Database.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -30,10 +32,12 @@ func NewServer(cfg *Config) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	mogoRepo, err := nosql.NewRepository(cfg.MongoDB.URL, cfg.MongoDB.database)
 
 	return &Service{
 		Config:       cfg,
-		Databaser:    queries,
+		SqlDB:        queries,
+		MongoDB:      mogoRepo,
 		Logger:       logger,
 		TokenManager: TokenManager,
 		Broker:       broker,

@@ -21,7 +21,7 @@ func Run(ctx context.Context) {
 
 	r.Use(cifractx.MiddlewareWithContext(config.SERVER, service))
 	auth := service.TokenManager.AuthMiddleware(service.Config.JWT.AccessToken.SecretKey)
-	_ = service.TokenManager.RoleGrant(service.Config.JWT.AccessToken.SecretKey, tokens.AdminRole, tokens.ModeratorRole)
+	adminGrant := service.TokenManager.RoleGrant(service.Config.JWT.AccessToken.SecretKey, tokens.AdminRole, tokens.ModeratorRole)
 
 	r.Route("/entities-storage", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
@@ -37,6 +37,7 @@ func Run(ctx context.Context) {
 						r.Put("/description", nil)
 						r.Put("/location", nil)
 						r.Put("/type", nil)
+						r.Post("/photo", nil)
 						r.Route("/schedule", func(r chi.Router) {
 							r.Delete("/{day_week}", nil)
 							r.Put("/{day_week}", nil)
@@ -58,6 +59,35 @@ func Run(ctx context.Context) {
 						r.Delete("/remove", nil)
 					})
 				})
+			})
+			r.Route("/public", func(r chi.Router) {
+				r.Route("/place", func(r chi.Router) {
+					r.Get("/{id}", nil)
+				})
+			})
+			r.Route("/public", func(r chi.Router) {
+				r.Route("/distributor", func(r chi.Router) {
+					r.Get("/{id}", nil)
+				})
+				r.Route("/places", func(r chi.Router) {
+
+					r.Get("/{id}", nil)
+					r.Get("/{id}/{photos}", nil)
+
+					r.Get("/{city_id}", nil)
+
+					r.Get("/{street_id}/{house_number}", nil)
+					r.Get("/{street_id}/{house_number}/{photos}", nil)
+
+					r.Get("/{street_id}/{type}", nil)
+				})
+			})
+
+			r.Route("admin", func(r chi.Router) {
+				r.Use(adminGrant)
+				r.Delete("/places/{id}", nil)
+				r.Delete("/distributor/{id}", nil)
+				r.Put("/type/{id}", nil)
 			})
 		})
 	})

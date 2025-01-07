@@ -1,9 +1,9 @@
-package db
+package repositories
 
 import (
 	"context"
 
-	"github.com/cifra-city/entities-storage/internal/data/db/sqlcore"
+	"github.com/cifra-city/entities-storage/internal/data/sql/repositories/sqlcore"
 	"github.com/google/uuid"
 )
 
