@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	service "github.com/cifra-city/entities-storage/internal/services"
+	"github.com/cifra-city/entities-storage/internal/services/events"
 )
 
 func runServices(ctx context.Context, wg *sync.WaitGroup) {
@@ -15,6 +16,8 @@ func runServices(ctx context.Context, wg *sync.WaitGroup) {
 			wg.Done()
 		}()
 	}
+
+	run(func() { events.Listener(ctx) })
 
 	run(func() { service.Run(ctx) })
 }

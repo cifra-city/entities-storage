@@ -23,7 +23,7 @@ type Service struct {
 
 func NewServer(cfg *Config) (*Service, error) {
 	logger := SetupLogger(cfg.Logging.Level, cfg.Logging.Format)
-	queries, err := sql.NewRepoSQl(cfg.Database.URL)
+	queries, err := sql.NewRepoSQL(cfg.Database.URL)
 	if err != nil {
 		return nil, err
 	}

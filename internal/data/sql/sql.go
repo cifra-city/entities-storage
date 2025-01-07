@@ -25,7 +25,7 @@ func NewDBConnection(url string) (*sql.DB, error) {
 	return db, nil
 }
 
-func NewRepoSQl(url string) (*Repo, error) {
+func NewRepoSQL(url string) (*Repo, error) {
 	db, err := NewDBConnection(url)
 	if err != nil {
 		return nil, err

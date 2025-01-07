@@ -70,15 +70,11 @@ func Run(ctx context.Context) {
 					r.Get("/{id}", nil)
 				})
 				r.Route("/places", func(r chi.Router) {
-
 					r.Get("/{id}", nil)
 					r.Get("/{id}/{photos}", nil)
-
 					r.Get("/{city_id}", nil)
-
 					r.Get("/{street_id}/{house_number}", nil)
 					r.Get("/{street_id}/{house_number}/{photos}", nil)
-
 					r.Get("/{street_id}/{type}", nil)
 				})
 			})
